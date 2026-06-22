@@ -177,9 +177,9 @@ public class Singleton {
     }
 }
 
-Main Class:
+Code.FactoryMethod Class:
 
-public class Main {
+public class Code.FactoryMethod {
 
     public static void main(String[] args) {
 
@@ -204,7 +204,7 @@ Only one object created.
 6. VERIFYING USING HASHCODE
 ====================================================
 
-public class Main {
+public class Code.FactoryMethod {
 
     public static void main(String[] args) {
 
