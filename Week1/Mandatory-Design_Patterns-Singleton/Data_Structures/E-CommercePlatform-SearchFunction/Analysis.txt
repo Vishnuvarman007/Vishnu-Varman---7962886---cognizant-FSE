@@ -1,0 +1,63 @@
+E-Commerce Platform - Search Function Time Complexity Analysis
+==============================================================
+
+Overview:
+---------
+This module implements two search algorithms to search products by productId
+in an E-Commerce platform. The Product entity holds productId, productName,
+and category as attributes.
+
+
+1. Linear Search
+----------------
+Implementation: LinearSearch.java
+Approach: Iterates through each element in the Product array one by one and
+          compares the productId with the target.
+
+Time Complexity:
+  - Best Case  : O(1) - Target product is found at the first index.
+  - Average Case: O(n) - Target product is somewhere in the middle.
+  - Worst Case : O(n) - Target product is at the last index or not present.
+
+Space Complexity: O(1) - No extra space used.
+
+Use Case:
+  Suitable for small or unsorted product catalogs where sorting overhead
+  is not justified.
+
+
+2. Binary Search
+----------------
+Implementation: BinarySearch.java
+Approach: Divides the sorted Product array in half repeatedly, comparing
+          the middle element's productId with the target to eliminate half
+          the search space each iteration.
+
+Prerequisite: The Product array must be sorted by productId in ascending order.
+
+Time Complexity:
+  - Best Case  : O(1) - Target product is found at the mid index on first check.
+  - Average Case: O(log n) - Target is found after several halvings.
+  - Worst Case : O(log n) - Target is not present or at the boundary.
+
+Space Complexity: O(1) - Iterative implementation uses no extra space.
+
+Use Case:
+  Suitable for large, sorted product catalogs where fast search is critical,
+  such as searching millions of products by ID in an e-commerce database.
+
+
+Comparison Summary:
+-------------------
+| Algorithm     | Best Case | Average Case | Worst Case | Requires Sorting |
+|---------------|-----------|--------------|------------|------------------|
+| Linear Search | O(1)      | O(n)         | O(n)       | No               |
+| Binary Search | O(1)      | O(log n)     | O(log n)   | Yes              |
+
+
+Recommendation:
+---------------
+For an E-Commerce platform with a large product inventory, Binary Search is
+strongly preferred due to its O(log n) efficiency. However, if the product
+list is frequently updated and maintaining a sorted order is expensive,
+Linear Search may be acceptable for smaller datasets or as a fallback.
