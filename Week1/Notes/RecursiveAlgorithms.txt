@@ -1,0 +1,136 @@
+========================================
+  RECURSIVE ALGORITHMS - NOTES
+========================================
+
+Recursion is a technique where a method calls itself
+to solve a smaller subproblem until a base case is reached.
+
+----------------------------------------
+1. STRUCTURE OF RECURSION
+----------------------------------------
+
+returnType method(params) {
+    // Base Case - stops recursion
+    if (condition) return value;
+
+    // Recursive Case - calls itself
+    return method(smaller_params);
+}
+
+⚠ Without a base case → StackOverflowError
+
+----------------------------------------
+2. HOW IT WORKS (Call Stack)
+----------------------------------------
+
+factorial(3)
+  → 3 * factorial(2)
+       → 2 * factorial(1)
+            → 1 * factorial(0)
+                 → returns 1   ← base case
+            ← returns 1
+       ← returns 2
+  ← returns 6
+
+----------------------------------------
+3. COMMON RECURSIVE ALGORITHMS
+----------------------------------------
+
+--- FACTORIAL ---
+int factorial(int n) {
+    if (n == 0) return 1;           // base case
+    return n * factorial(n - 1);   // recursive case
+}
+Time: O(n) | Space: O(n)
+
+--- FIBONACCI ---
+int fibonacci(int n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+Time: O(2ⁿ) | Space: O(n)
+⚠ Inefficient - use memoization for large n
+
+--- BINARY SEARCH (Recursive) ---
+int binarySearch(int[] arr, int low, int high, int target) {
+    if (low > high) return -1;
+    int mid = (low + high) / 2;
+    if (arr[mid] == target) return mid;
+    if (target < arr[mid]) return binarySearch(arr, low, mid - 1, target);
+    return binarySearch(arr, mid + 1, high, target);
+}
+Time: O(log n) | Space: O(log n)
+
+--- MERGE SORT ---
+void mergeSort(int[] arr, int left, int right) {
+    if (left < right) {
+        int mid = (left + right) / 2;
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}
+Time: O(n log n) | Space: O(n)
+
+--- SUM OF ARRAY ---
+int sum(int[] arr, int n) {
+    if (n == 0) return 0;
+    return arr[n - 1] + sum(arr, n - 1);
+}
+
+--- POWER ---
+int power(int base, int exp) {
+    if (exp == 0) return 1;
+    return base * power(base, exp - 1);
+}
+
+----------------------------------------
+4. MEMOIZATION (Optimized Recursion)
+----------------------------------------
+
+Map<Integer, Integer> memo = new HashMap<>();
+
+int fibonacci(int n) {
+    if (n <= 1) return n;
+    if (memo.containsKey(n)) return memo.get(n);
+    int result = fibonacci(n - 1) + fibonacci(n - 2);
+    memo.put(n, result);
+    return result;
+}
+Time: O(n) | Space: O(n)
+
+----------------------------------------
+5. RECURSION vs ITERATION
+----------------------------------------
+
+Recursion:
+  ✅ Clean and readable code
+  ✅ Natural fit for tree/graph problems
+  ❌ Higher memory (call stack)
+  ❌ Risk of StackOverflow for deep recursion
+
+Iteration:
+  ✅ Better performance
+  ✅ No stack overflow risk
+  ❌ More complex code for tree problems
+
+----------------------------------------
+6. WHEN TO USE RECURSION
+----------------------------------------
+
+✅ Tree traversal (in-order, pre-order, post-order)
+✅ Graph traversal (DFS)
+✅ Divide and Conquer (Merge Sort, Quick Sort)
+✅ Backtracking (N-Queens, Sudoku)
+✅ Dynamic Programming problems
+
+========================================
+  TAIL RECURSION
+========================================
+When the recursive call is the LAST operation.
+Some compilers optimize tail recursion to avoid stack growth.
+
+int factorial(int n, int acc) {
+    if (n == 0) return acc;
+    return factorial(n - 1, n * acc);  // tail call
+}

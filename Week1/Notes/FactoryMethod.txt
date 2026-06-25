@@ -1,0 +1,84 @@
+========================================
+  FACTORY METHOD PATTERN - NOTES
+========================================
+
+The Factory Method Pattern is a Creational Design Pattern
+that defines an interface for creating objects, but lets
+subclasses decide which class to instantiate.
+
+----------------------------------------
+1. INTENT
+----------------------------------------
+- Decouple object creation from the client code.
+- The client calls a factory method instead of `new`.
+- Subclasses override the factory method to change the type of object created.
+
+----------------------------------------
+2. STRUCTURE
+----------------------------------------
+
+  Product (Interface)
+      ↑
+  ConcreteProduct (e.g., PDFDocument, WordDocument)
+
+  Creator (Abstract class with factory method)
+      ↑
+  ConcreteCreator (overrides factory method)
+
+----------------------------------------
+3. EXAMPLE (Document Factory)
+----------------------------------------
+
+  interface Document {
+      void open();
+  }
+
+  class PDFDocument implements Document {
+      public void open() { System.out.println("Opening PDF"); }
+  }
+
+  abstract class DocumentFactory {
+      public abstract Document createDocument();
+  }
+
+  class PDFFactory extends DocumentFactory {
+      public Document createDocument() { return new PDFDocument(); }
+  }
+
+  // Client
+  DocumentFactory factory = new PDFFactory();
+  Document doc = factory.createDocument();
+  doc.open();
+
+----------------------------------------
+4. WHEN TO USE
+----------------------------------------
+- When the exact type of object to create isn't known until runtime.
+- When you want to delegate instantiation to subclasses.
+- To follow Open/Closed Principle (open for extension, closed for modification).
+
+----------------------------------------
+5. ADVANTAGES
+----------------------------------------
+- Eliminates tight coupling between creator and product.
+- Supports Single Responsibility Principle.
+- Easy to add new product types without changing existing code.
+
+----------------------------------------
+6. DISADVANTAGES
+----------------------------------------
+- Can lead to many subclasses.
+- More complex than direct instantiation.
+
+----------------------------------------
+7. REAL-WORLD EXAMPLES
+----------------------------------------
+- java.util.Calendar.getInstance()
+- java.sql.DriverManager.getConnection()
+- javax.xml.parsers.DocumentBuilderFactory
+
+========================================
+  COMPARISON: Factory vs Abstract Factory
+========================================
+Factory Method     → Creates ONE product via subclassing
+Abstract Factory   → Creates FAMILIES of related products

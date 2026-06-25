@@ -1,0 +1,138 @@
+========================================
+  JUNIT 5 & MOCKITO - NOTES
+========================================
+
+----------------------------------------
+PART 1: JUNIT 5
+----------------------------------------
+
+JUnit 5 is the standard testing framework for Java.
+It is composed of:
+  - JUnit Platform  → Launches tests on the JVM
+  - JUnit Jupiter   → New programming model (annotations)
+  - JUnit Vintage   → Backward compatibility with JUnit 3/4
+
+--- KEY ANNOTATIONS ---
+
+@Test               → Marks a method as a test case
+@BeforeEach         → Runs before each test method
+@AfterEach          → Runs after each test method
+@BeforeAll          → Runs once before all tests (static)
+@AfterAll           → Runs once after all tests (static)
+@DisplayName        → Custom name for test
+@Disabled           → Skips the test
+@ParameterizedTest  → Runs test with multiple inputs
+@ValueSource        → Provides values for parameterized test
+
+--- COMMON ASSERTIONS ---
+
+assertEquals(expected, actual)
+assertNotEquals(expected, actual)
+assertTrue(condition)
+assertFalse(condition)
+assertNull(object)
+assertNotNull(object)
+assertThrows(Exception.class, () -> method())
+assertAll(
+    () -> assertEquals(...),
+    () -> assertTrue(...)
+)
+
+--- EXAMPLE ---
+
+class CalculatorTest {
+
+    Calculator calc = new Calculator();
+
+    @Test
+    @DisplayName("Addition Test")
+    void testAdd() {
+        assertEquals(5, calc.add(2, 3));
+    }
+
+    @Test
+    void testDivideByZero() {
+        assertThrows(ArithmeticException.class, () -> calc.divide(10, 0));
+    }
+}
+
+----------------------------------------
+PART 2: MOCKITO
+----------------------------------------
+
+Mockito is a mocking framework used to isolate the unit
+under test by replacing dependencies with mock objects.
+
+--- KEY CONCEPTS ---
+
+Mock    → Fake object that simulates a real dependency
+Stub    → Predefines return values for method calls
+Verify  → Checks if a method was called
+
+--- KEY ANNOTATIONS ---
+
+@Mock               → Creates a mock object
+@InjectMocks        → Injects mocks into the class under test
+@ExtendWith(MockitoExtension.class) → Activates Mockito in JUnit 5
+
+--- COMMON METHODS ---
+
+Mockito.mock(Class.class)           → Create mock manually
+when(mock.method()).thenReturn(val) → Stub a method
+verify(mock).method()               → Verify method was called
+verify(mock, times(2)).method()     → Verify called N times
+doThrow(Exception).when(mock).method() → Stub exception
+
+--- EXAMPLE ---
+
+@ExtendWith(MockitoExtension.class)
+class MyServiceTest {
+
+    @Mock
+    ExternalApi api;
+
+    @InjectMocks
+    MyService service;
+
+    @Test
+    void testGetData() {
+        when(api.fetchData()).thenReturn("MockedData");
+        String result = service.getData();
+        assertEquals("MockedData", result);
+        verify(api).fetchData();
+    }
+}
+
+----------------------------------------
+PART 3: TDD (Test Driven Development)
+----------------------------------------
+
+TDD Cycle:
+  1. RED   → Write a failing test
+  2. GREEN → Write minimum code to pass the test
+  3. REFACTOR → Clean up code without breaking tests
+
+Benefits:
+- Catches bugs early
+- Forces clean, modular design
+- Acts as living documentation
+
+========================================
+  MAVEN DEPENDENCIES
+========================================
+
+<!-- JUnit 5 -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.10.0</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- Mockito -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>5.5.0</version>
+    <scope>test</scope>
+</dependency>

@@ -1,0 +1,63 @@
+========================================
+  ASYMPTOTIC NOTATION - NOTES
+========================================
+
+Asymptotic Notation is used to describe the performance/complexity
+of an algorithm in terms of input size (n).
+
+----------------------------------------
+1. BIG O NOTATION - O(n)  [Upper Bound]
+----------------------------------------
+- Describes the WORST CASE time complexity.
+- How the algorithm performs at most.
+
+Common Complexities (Best to Worst):
+  O(1)       - Constant       → Array index access
+  O(log n)   - Logarithmic    → Binary Search
+  O(n)       - Linear         → Linear Search
+  O(n log n) - Linearithmic   → Merge Sort, Quick Sort
+  O(n²)      - Quadratic      → Bubble Sort, Selection Sort
+  O(2ⁿ)      - Exponential    → Recursive Fibonacci
+  O(n!)      - Factorial      → Permutations
+
+----------------------------------------
+2. OMEGA NOTATION - Ω(n)  [Lower Bound]
+----------------------------------------
+- Describes the BEST CASE time complexity.
+- How the algorithm performs at minimum.
+
+Example: Linear Search → Ω(1) (element found at first position)
+
+----------------------------------------
+3. THETA NOTATION - Θ(n)  [Tight Bound]
+----------------------------------------
+- Describes BOTH best and worst case (average).
+- Used when best and worst case are the same.
+
+Example: Merge Sort → Θ(n log n)
+
+----------------------------------------
+4. SPACE COMPLEXITY
+----------------------------------------
+- Measures extra memory used by an algorithm.
+- O(1) → In-place algorithms (no extra space)
+- O(n) → Extra array or recursion stack
+
+----------------------------------------
+5. EXAMPLES
+----------------------------------------
+
+Algorithm         | Best     | Average  | Worst
+------------------|----------|----------|----------
+Binary Search     | O(1)     | O(log n) | O(log n)
+Linear Search     | O(1)     | O(n)     | O(n)
+Bubble Sort       | O(n)     | O(n²)    | O(n²)
+Merge Sort        | O(n logn)| O(n logn)| O(n logn)
+Quick Sort        | O(n logn)| O(n logn)| O(n²)
+
+========================================
+  KEY RULES
+========================================
+- Drop constants     → O(2n) = O(n)
+- Drop lower terms   → O(n² + n) = O(n²)
+- Always consider the dominant term
