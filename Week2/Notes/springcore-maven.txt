@@ -1,0 +1,177 @@
+========================================
+  SPRING CORE & MAVEN - NOTES
+========================================
+
+----------------------------------------
+PART 1: SPRING CORE
+----------------------------------------
+
+Spring Core is the foundation of the Spring Framework.
+It provides the IoC (Inversion of Control) container
+and Dependency Injection (DI) mechanism.
+
+--- KEY CONCEPTS ---
+
+1. IoC (Inversion of Control)
+   - Object creation and lifecycle is managed by Spring
+   - Developer defines WHAT, Spring handles HOW
+   - Container creates, wires, and manages beans
+
+2. Dependency Injection (DI)
+   - Dependencies are injected by the container
+   - Types:
+     a) Constructor Injection
+     b) Setter Injection
+     c) Field Injection (@Autowired)
+
+3. Bean
+   - Any object managed by the Spring IoC container
+   - Defined via XML, annotations, or Java config
+
+--- SPRING CONTAINER TYPES ---
+
+BeanFactory
+  - Basic container
+  - Lazy initialization (creates beans on demand)
+  - Use: lightweight apps
+
+ApplicationContext
+  - Advanced container (extends BeanFactory)
+  - Eager initialization (creates beans at startup)
+  - Supports events, AOP, i18n
+  - Use: most Spring applications
+
+  Implementations:
+  - ClassPathXmlApplicationContext   → loads XML from classpath
+  - FileSystemXmlApplicationContext  → loads XML from file system
+  - AnnotationConfigApplicationContext → loads Java config
+
+--- XML CONFIGURATION ---
+
+applicationContext.xml:
+
+<beans>
+    <bean id="bookRepository" class="com.library.repository.BookRepository"/>
+
+    <bean id="bookService" class="com.library.service.BookService">
+        <property name="bookRepository" ref="bookRepository"/>
+    </bean>
+</beans>
+
+--- ANNOTATION CONFIGURATION ---
+
+@Component       → Generic Spring bean
+@Service         → Service layer bean
+@Repository      → DAO/Repository layer bean
+@Controller      → Web layer bean
+@Autowired       → Auto inject dependency
+@Qualifier       → Specify which bean to inject
+@Configuration   → Java-based config class
+@Bean            → Declares a bean in @Configuration class
+@ComponentScan   → Scan packages for components
+
+--- EXAMPLE (Annotation-based) ---
+
+@Service
+public class BookService {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    public void addBook() {
+        System.out.println(bookRepository.getBookTitle());
+    }
+}
+
+--- BEAN SCOPES ---
+
+singleton   → One instance per container (default)
+prototype   → New instance every time requested
+request     → One per HTTP request (web only)
+session     → One per HTTP session (web only)
+
+@Scope("prototype")
+@Component
+public class MyBean { }
+
+--- BEAN LIFECYCLE ---
+
+1. Bean instantiated
+2. Dependencies injected
+3. @PostConstruct method called
+4. Bean ready for use
+5. @PreDestroy method called
+6. Bean destroyed
+
+@PostConstruct
+public void init() { System.out.println("Bean initialized"); }
+
+@PreDestroy
+public void destroy() { System.out.println("Bean destroyed"); }
+
+----------------------------------------
+PART 2: MAVEN
+----------------------------------------
+
+Maven is a build automation and project management tool
+for Java projects. It uses pom.xml to manage dependencies,
+plugins, and build lifecycle.
+
+--- POM.XML STRUCTURE ---
+
+<project>
+    <groupId>com.example</groupId>       <!-- company/org -->
+    <artifactId>my-app</artifactId>      <!-- project name -->
+    <version>1.0-SNAPSHOT</version>      <!-- version -->
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- add libraries here -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- add plugins here -->
+        </plugins>
+    </build>
+</project>
+
+--- MAVEN BUILD LIFECYCLE ---
+
+validate   → Validates project structure
+compile    → Compiles source code
+test       → Runs unit tests
+package    → Packages into JAR/WAR
+verify     → Runs integration tests
+install    → Installs to local repository (~/.m2)
+deploy     → Deploys to remote repository
+
+--- COMMON COMMANDS ---
+
+mvn clean              → Deletes target/ folder
+mvn compile            → Compiles source code
+mvn test               → Runs tests
+mvn package            → Creates JAR/WAR
+mvn clean install      → Clean build + install
+mvn spring-boot:run    → Runs Spring Boot app
+mvn dependency:tree    → Shows dependency tree
+
+--- DEPENDENCY SCOPE ---
+
+compile   → Available everywhere (default)
+test      → Only for testing
+provided  → Provided by JDK/container at runtime
+runtime   → Not needed for compile, needed at runtime
+
+--- SPRING BOOT STARTER DEPENDENCIES ---
+
+spring-boot-starter-web        → REST APIs
+spring-boot-starter-data-jpa   → JPA + Hibernate
+spring-boot-starter-test       → JUnit + Mockito
+spring-boot-starter-security   → Spring Security
+
+========================================
+  KEY DIFFERENCE: Spring vs Spring Boot
+========================================
+Spring      → Manual configuration, XML/annotations
+Spring Boot → Auto-configuration, embedded server, starters

@@ -1,0 +1,233 @@
+========================================
+  SPRING DATA JPA - NOTES
+========================================
+
+Spring Data JPA simplifies database access by reducing
+boilerplate code. It builds on top of JPA (Java Persistence API)
+and Hibernate as the default ORM provider.
+
+----------------------------------------
+1. KEY CONCEPTS
+----------------------------------------
+
+JPA (Java Persistence API)
+  - Standard specification for ORM in Java
+  - Maps Java objects to database tables
+
+Hibernate
+  - Most popular JPA implementation
+  - Used by default in Spring Boot
+
+Spring Data JPA
+  - Abstraction layer on top of JPA
+  - Auto-generates queries from method names
+  - No need to write SQL for basic CRUD
+
+----------------------------------------
+2. MAVEN DEPENDENCY
+----------------------------------------
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+</dependency>
+
+<!-- For MySQL -->
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <scope>runtime</scope>
+</dependency>
+
+----------------------------------------
+3. APPLICATION.PROPERTIES CONFIG
+----------------------------------------
+
+# H2 (in-memory, for testing)
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driver-class-name=org.h2.Driver
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+# MySQL
+spring.datasource.url=jdbc:mysql://localhost:3306/librarydb
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# DDL options:
+# create       → drops and creates tables on startup
+# create-drop  → creates on startup, drops on shutdown
+# update       → updates schema without dropping data
+# validate     → validates schema, no changes
+# none         → no action
+
+----------------------------------------
+4. ENTITY CLASS
+----------------------------------------
+
+@Entity
+@Table(name = "books")
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String title;
+
+    private String author;
+
+    private double price;
+
+    // getters and setters
+}
+
+--- ANNOTATIONS ---
+
+@Entity          → Marks class as a JPA entity (table)
+@Table           → Specifies table name
+@Id              → Primary key
+@GeneratedValue  → Auto-generate ID strategy
+  - IDENTITY     → Auto-increment (MySQL)
+  - SEQUENCE     → Sequence (PostgreSQL, Oracle)
+  - AUTO         → Default, picks based on DB
+@Column          → Maps field to column
+@Transient       → Field not persisted to DB
+@Lob             → Large object (text/blob)
+@Temporal        → Date/time mapping
+
+----------------------------------------
+5. REPOSITORY INTERFACE
+----------------------------------------
+
+public interface BookRepository extends JpaRepository<Book, Long> {
+
+    // Spring Data auto-implements these:
+    List<Book> findByAuthor(String author);
+    List<Book> findByTitleContaining(String keyword);
+    Optional<Book> findByTitle(String title);
+    List<Book> findByPriceLessThan(double price);
+    List<Book> findByAuthorAndPrice(String author, double price);
+}
+
+--- JPAREPOSITORY BUILT-IN METHODS ---
+
+save(entity)           → Insert or Update
+findById(id)           → Find by primary key
+findAll()              → Get all records
+deleteById(id)         → Delete by ID
+delete(entity)         → Delete entity
+count()                → Total record count
+existsById(id)         → Check if exists
+
+--- REPOSITORY HIERARCHY ---
+
+Repository
+  └── CrudRepository       → Basic CRUD
+        └── PagingAndSortingRepository → + pagination/sorting
+              └── JpaRepository        → + JPA specific methods
+
+----------------------------------------
+6. SERVICE LAYER
+----------------------------------------
+
+@Service
+public class BookService {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    public Book addBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    public Optional<Book> getBookById(Long id) {
+        return bookRepository.findById(id);
+    }
+
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
+    }
+}
+
+----------------------------------------
+7. CUSTOM QUERIES
+----------------------------------------
+
+--- JPQL (Java Persistence Query Language) ---
+
+@Query("SELECT b FROM Book b WHERE b.price > :price")
+List<Book> findExpensiveBooks(@Param("price") double price);
+
+--- Native SQL ---
+
+@Query(value = "SELECT * FROM books WHERE author = :author",
+       nativeQuery = true)
+List<Book> findByAuthorNative(@Param("author") String author);
+
+--- @Modifying (for UPDATE/DELETE) ---
+
+@Modifying
+@Transactional
+@Query("UPDATE Book b SET b.price = :price WHERE b.id = :id")
+int updatePrice(@Param("id") Long id, @Param("price") double price);
+
+----------------------------------------
+8. PAGINATION & SORTING
+----------------------------------------
+
+// Pagination
+Page<Book> page = bookRepository.findAll(PageRequest.of(0, 10));
+
+// Sorting
+List<Book> books = bookRepository.findAll(Sort.by("title").ascending());
+
+// Both
+Page<Book> sorted = bookRepository.findAll(
+    PageRequest.of(0, 10, Sort.by("price").descending())
+);
+
+----------------------------------------
+9. RELATIONSHIPS
+----------------------------------------
+
+@OneToOne    → One entity relates to one other
+@OneToMany   → One entity relates to many
+@ManyToOne   → Many entities relate to one
+@ManyToMany  → Many relate to many
+
+Example:
+@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+private List<Book> books;
+
+@ManyToOne
+@JoinColumn(name = "author_id")
+private Author author;
+
+========================================
+  TRANSACTION MANAGEMENT
+========================================
+
+@Transactional   → Wraps method in a DB transaction
+                   Rolls back on RuntimeException
+
+@Service
+public class BookService {
+
+    @Transactional
+    public void transferBooks() {
+        // if any exception occurs, all DB changes rollback
+    }
+}
